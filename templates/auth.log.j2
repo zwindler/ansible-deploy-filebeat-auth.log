@@ -13,9 +13,12 @@ filter {
         "message" => '%{SYSLOGTIMESTAMP:system.auth.timestamp} %{SYSLOGHOST:system.auth.hostname} sshd(?:\[%{POSINT:system.auth.pid}\])?: %{DATA:system.auth.ssh.event} %{DATA:system.auth.ssh.method} for (invalid user )?%{DATA:system.auth.user} from %{IPORHOST:system.auth.ip} port %{NUMBER:system.auth.port} ssh2(: %{GREEDYDATA:system.auth.ssh.signature})?'
         add_tag => "ssh_login"
       }
+    }
+    grok {
       match => {
-        "message" => '%{SYSLOGTIMESTAMP:system.auth.timestamp} %{SYSLOGHOST:system.auth.hostname} sshd(?:\\[%{POSINT:system.auth.pid}\\])?: %{DATA:system.auth.ssh.event} user %{DATA:system.auth.user} from %{IPORHOST:system.auth.ip}'
+        "message" => '%{SYSLOGTIMESTAMP:system.auth.timestamp} %{SYSLOGHOST:system.auth.hostname} sshd(?:\[%{POSINT:system.auth.pid}\])?: %{DATA:system.auth.ssh.event} user %{DATA:system.auth.user} from %{IPORHOST:system.auth.ip}'
         add_tag => "ssh_login"
+      }
     }
     geoip {
       source => "system.auth.ip"
@@ -29,3 +32,4 @@ output {
         index => "logstash-%{+YYYY.MM.dd}"
     }
 }
+
