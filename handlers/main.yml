@@ -1,0 +1,10 @@
+---
+- name: "notify filebeat for restart"
+  service: name=filebeat state=restarted enabled=yes
+
+- name: "notify nginx for restart"
+  service: name=nginx state=restarted enabled=yes
+
+- name: "notify logstash for restart"
+  service: name=logstash state=restarted enabled=yes
+  delegate_to: '{{elk_server}}'

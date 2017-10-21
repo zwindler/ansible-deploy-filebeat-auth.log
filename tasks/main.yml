@@ -1,0 +1,29 @@
+---
+- name: Install prerequisites
+  apt:
+    name: apt-transport-https
+    update_cache: yes
+- name: Add Elasticsearch key
+  apt_key:
+    url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    state: present
+- name: Add elasticsearch repository
+  apt_repository:
+    repo: deb https://artifacts.elastic.co/packages/5.x/apt stable main
+    state: present
+    filename: 'elasticsearch'
+- name: Install Filebeat
+  apt:
+    name: filebeat
+    state: latest
+- name: Configure filebeat to collect auth.log
+  template:
+    src: filebeat.yml.j2
+    dest: /etc/filebeat/filebeat.yml
+  notify: "notify filebeat for restart"
+- name: Configure filebeat log collection in central logstash
+  template: 
+    src: auth.log.j2
+    dest: /etc/logstash/conf.d/{{inventory_hostname}}_auth.log
+  notify: "notify logstash for restart"
+  delegate_to: '{{elk_server}}'
